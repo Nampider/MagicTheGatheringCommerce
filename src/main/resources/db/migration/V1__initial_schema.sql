@@ -1,0 +1,2 @@
+-- Placeholder migration for the commerce service.
+-- Add commerce tables here when domain models are introduced.

@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Stripe Test Checkout</title>
+    <script src="https://js.stripe.com/v3/"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; }
+        #card-element { border: 1px solid #ccc; padding: 12px; border-radius: 4px; }
+        #payment-result { margin-top: 20px; font-weight: bold; }
+        button { margin-top: 20px; padding: 10px 20px; font-size: 16px; }
+    </style>
+</head>
+<body>
+<h2>Stripe Test Checkout</h2>
+
+<form id="payment-form">
+    <label>Card details</label>
+    <div id="card-element"><!-- Stripe injects card fields here --></div>
+    <button id="submit">Pay $10.99</button>
+</form>
+
+<div id="payment-result"></div>
+
+<script>
+    const stripe = Stripe("<your publish key goes here>");
+    const elements = stripe.elements();
+    const cardElement = elements.create("card");
+    cardElement.mount("#card-element");
+
+    const form = document.getElementById("payment-form");
+    form.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        // Step A: Ask backend to create a PaymentIntent
+        const res = await fetch("/payment", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ amount: 1099, currency: "usd" }) // $10.99
+        });
+
+        const { clientSecret } = await res.json();
+
+        // Step B: Confirm payment with Stripe.js
+        const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+            payment_method: {
+                card: cardElement
+            }
+        });
+
+        const resultDiv = document.getElementById("payment-result");
+
+        if (error) {
+            resultDiv.textContent = "❌ Payment failed: " + error.message;
+        } else if (paymentIntent.status === "succeeded") {
+            resultDiv.textContent = "✅ Payment succeeded!";
+        } else {
+            resultDiv.textContent = "⚠️ Payment status: " + paymentIntent.status;
+        }
+    });
+</script>
+</body>
+</html>
