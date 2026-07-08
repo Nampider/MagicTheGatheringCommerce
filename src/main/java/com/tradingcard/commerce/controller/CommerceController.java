@@ -23,7 +23,7 @@ public class CommerceController {
     @PostMapping("/checkout")
     public Mono<ResponseEntity<CreateCheckoutResponse>> createCheckout(
             @RequestBody CreateCheckoutRequest request,
-            @RequestHeader(value = "Idempotency-Key", required = false) String idempotencyKey,
+            @RequestHeader("Idempotency-Key") String idempotencyKey,
             @org.springframework.security.core.annotation.AuthenticationPrincipal Jwt jwt
     ) {
         String userId = jwt.getSubject();

@@ -23,9 +23,13 @@ public class PaymentEntity {
 
     private String status;
 
+    private String idempotencyKey;
+
     private String stripeCheckoutSessionId;
 
     private String stripePaymentIntentId;
+
+    private String stripeCheckoutUrl;
 
     private LocalDateTime createdAt;
 

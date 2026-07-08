@@ -9,4 +9,8 @@ import java.util.UUID;
 
 public interface PaymentRepository extends ReactiveCrudRepository<PaymentEntity, UUID> {
     Mono<PaymentEntity> findByStripeCheckoutSessionId(String stripeCheckoutSessionId);
+
+    Mono<PaymentEntity> findByStripePaymentIntentId(String stripePaymentIntentId);
+
+    Mono<PaymentEntity> findByIdempotencyKey(String idempotencyKey);
 }

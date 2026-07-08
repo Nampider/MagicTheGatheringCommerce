@@ -26,6 +26,7 @@ public class StripeCheckoutProcessor {
 
     public Mono<CreateCheckoutResponse> createCheckoutSession(String userId, CreateCheckoutRequest request, String idempotencyKey) {
         validateRequest(request);
+        validateIdempotencyKey(idempotencyKey);
         PaymentEntity payment = paymentEntityMapper.paymentEntityMapper(request, PaymentStatus.PENDING.name(), userId);
         return paymentEntityDAO.paymentRepositoryDao(payment, idempotencyKey);
     }
@@ -41,6 +42,12 @@ public class StripeCheckoutProcessor {
 
         if (request.currency() == null || request.currency().isBlank()) {
             throw new IllegalArgumentException("currency is required");
+        }
+    }
+
+    private void validateIdempotencyKey(String idempotencyKey) {
+        if (idempotencyKey == null || idempotencyKey.isBlank()) {
+            throw new IllegalArgumentException("Idempotency-Key header is required");
         }
     }
 }
